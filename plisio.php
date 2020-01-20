@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name: WooCommerce Plisio Payment Gateway
- * Plugin URI: https://plisio.net/download/plugins/woocommerce-plisio-1.0.0.zip
+ * Plugin Name: Plisio Payment Gateway for WooCommerce
+ * Plugin URI: https://plisio.net/download/plugins/plisio-gateway-for-woocommerce-1.0.0.zip
  * Description: Accept cryptocurrencies via Plisio in your WooCommerce store
  * Version: 1.0.0
  * Author: Plisio
