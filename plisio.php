@@ -140,7 +140,7 @@ function plisio_init(){
                 'description'       => implode($description, ', '),
                 'amount_usd'        => number_format($order->get_total(), 8, '.', ''),
                 'orig_currency'     => get_woocommerce_currency(),
-                'currency'          =>  $_POST['currency'],
+                'currency'          => sanitize_text_field($_POST['currency']),
                 'cancel_url'        => $order->get_cancel_order_url(),
                 'callback_url'      => trailingslashit(get_bloginfo('wpurl')) . '?wc-api=wc_plisio_gateway',
                 'success_url'       => add_query_arg('order-received', $order->get_id(), add_query_arg('key', $order->get_order_key(), $this->get_return_url($wcOrder))),
@@ -265,7 +265,7 @@ function plisio_init(){
             $orderStatuses = $this->get_option('order_statuses');
 
             if (isset($_POST[$this->plugin_id . $this->id . '_order_statuses']))
-                $orderStatuses = $_POST[$this->plugin_id . $this->id . '_order_statuses'];
+                $orderStatuses = sanitize_text_field($_POST[$this->plugin_id . $this->id . '_order_statuses']);
 
             return $orderStatuses;
         }
