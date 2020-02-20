@@ -12,19 +12,55 @@ The easiest and quickest way to accept Bitcoin, Litecoin, Ethereum and other cry
 
 == Description ==
 
-Use Plisio plugin to accept Bitcoin, Litecoin, Ethereum and other cryptocurrencies payments from customers around the World. We support Bitcoin SegWit protocol. These transactions have priority and less Bitcoin network fee.
+Use Plisio plugin to accept Bitcoin, Litecoin, Ethereum, Bitcoin Cash, Zcash, DogeCoin and other cryptocurrencies payments from customers around the World. We support Bitcoin SegWit protocol. These transactions have priority and less Bitcoin network fee.
 
 == Plisio Cryptocurrency Payment Gateway for WooCommerce ==
 
-Start accepting Bitcoin and other cryptocurrencies in no time! Our official WooCommerce module connects your store to our **fully automated cryptocurrency processing platform and invoice system**, giving you access to the rapidly emerging blockchain market.
+Our official WooCommerce module connects your store to our **fully automated cryptocurrency processing platform and invoice system**, giving you access to the rapidly emerging blockchain market.
 
-With Plisio, online businesses can **accept Bitcoin, Litecoin, Ethereum** as well as 50+ other digital currencies (Altcoins) hassle-free.
+With Plisio, online businesses can **accept Bitcoin, Litecoin, Ethereum, Bitcoin Cash, Zcash, DogeCoin** as well as 50+ other digital currencies (Altcoins) hassle-free.
 
 == Start Accepting Bitcoin in Minutes! ==
 
 The extension allows stores that use Wordpress WooCommerce shopping cart system to accept Bitcoin payments as well as Altcoins via the Plisio API. Integration and configuration of our WooCommerce module is super simple, while the solution you get is fully automated - you will receive automatic payment confirmations and order status updates.
 
 To find out more about the benefits of Cryptocurrencies for your business, as well as the solution offered by Plisio, [*check our website*](https://plisio.net).
+
+
+= Supported currencies for automatic exchange rates are: =
+
+* USD - United States Dollar
+* AUD - Australian Dollar
+* BRL - Brazilian Real
+* CAD - Canadian Dollar
+* CHF - Swiss Franc
+* CLP - Chilean Peso
+* CNY - Chinese Yuan
+* CZK - Czech Republic Koruna
+* DKK - Danish Krone
+* EUR - Euro
+* GBP - British Pound Sterling
+* HKD - Hong Kong Dollar
+* HUF - Hungarian Forint
+* IDR - Indonesian Rupiah
+* ILS - Israeli New Sheqel
+* INR - Indian Rupee
+* JPY - Japanese Yen
+* KRW - South Korean Won
+* MXN - Mexican Peso
+* MYR - Malaysian Ringgit
+* NOK - Norwegian Krone
+* NZD - New Zealand Dollar
+* PHP - Philippine Peso
+* PKR - Pakistani Rupee
+* PLN - Polish Zloty
+* RUB - Russian Ruble
+* SEK - Swedish Krona
+* SGD - Singapore Dollar
+* THB - Thai Baht
+* TRY - Turkish Lira
+* TWD - New Taiwan Dollar
+* ZAR - South African Rand
 
 = Features =
 
