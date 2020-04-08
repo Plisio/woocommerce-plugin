@@ -41,11 +41,34 @@ function plisio_init()
 
             $plisio = new PlisioClient('');
             $currencies = $plisio->getCurrencies();
+
             if (!isset($_GET['order-received']) || !isset($_GET['key'])) {
                 if (isset($currencies['data']) && !empty($currencies['data'])) {
-                    $this->description = 'Pay with: <select name="currency" class="select">';
+
+                    $storedSettings = get_option('woocommerce_plisio_settings');
+                    if (is_array($storedSettings) && !empty($storedSettings['receive_currencies'])) {
+                        $this->plisio_receive_currencies = $storedSettings['receive_currencies'];
+                    }
+                    if (!empty($this->plisio_receive_currencies)) {
+                        usort($currencies['data'], function ($a, $b) {
+                            $idxA = array_search($a['cid'], $this->plisio_receive_currencies);
+                            $idxB = array_search($b['cid'], $this->plisio_receive_currencies);
+
+                            $idxA = $idxA === false ? -1 : $idxA;
+                            $idxB = $idxB === false ? -1 : $idxB;
+
+                            if ($idxA < 0 && $idxB < 0) return -1;
+                            if ($idxA < 0 && $idxB >= 0) return 1;
+                            if ($idxA >= 0 && $idxB < 0) return -1;
+                            return $idxA - $idxB;
+                        });
+                    }
+
+                    $this->description = 'Pay with <select name="currency" class="select">';
                     foreach ($currencies['data'] as $currency) {
-                        $this->description .= '<option value="' . $currency['cid'] . '">' . $currency['name'] . '</option>';
+                        if (empty($this->plisio_receive_currencies) || in_array($currency['cid'], $this->plisio_receive_currencies)) {
+                          $this->description .= '<option value="' . $currency['cid'] . '">' . $currency['name'] . '</option>';
+                        }
                     }
                     $this->description .= '</select>';
                 }
@@ -63,11 +86,11 @@ function plisio_init()
         public function admin_options()
         {
             ?>
-            <h3><?php _e('Plisio', 'woothemes'); ?></h3>
-            <p><?php _e('Accept cryptocurrencies through the Plisio.net') ?><br>
-            <table class="form-table">
-                <?php $this->generate_settings_html(); ?>
-            </table>
+          <h3><?php _e('Plisio', 'woothemes'); ?></h3>
+          <p><?php _e('Accept cryptocurrencies through the Plisio.net') ?><br>
+          <table class="form-table">
+              <?php $this->generate_settings_html(); ?>
+          </table>
             <?php
 
         }
@@ -99,6 +122,9 @@ function plisio_init()
                     'type' => 'text',
                     'description' => __('Plisio API Secret key', 'woocommerce'),
                     'default' => (empty($this->get_option('api_key')) ? '' : $this->get_option('api_key')),
+                ),
+                'receive_currencies' => array(
+                    'type' => 'receive_currencies'
                 ),
                 'order_statuses' => array(
                     'type' => 'order_statuses'
@@ -175,7 +201,6 @@ function plisio_init()
 
         public function payment_callback()
         {
-
             if ($this->verifyCallbackData($_POST)) {
                 $request = $_POST;
                 global $woocommerce;
@@ -232,7 +257,152 @@ function plisio_init()
             }
         }
 
-        public function generate_order_statuses_html()
+
+        private
+            $plisio_receive_currencies = array();
+
+
+        public
+        function generate_receive_currencies_html()
+        {
+            $plisio = new PlisioClient('');
+            $currencies = $plisio->getCurrencies();
+            if (empty($currencies) || empty($currencies['data'])) {
+                return false;
+            }
+            $receive_currencies = $currencies['data'];
+            $storedSettings = get_option('woocommerce_plisio_settings');
+            if (is_array($storedSettings) && !empty($storedSettings['receive_currencies'])) {
+                $this->plisio_receive_currencies = $storedSettings['receive_currencies'];
+            }
+            if (!empty($this->plisio_receive_currencies)) {
+                usort($receive_currencies, function ($a, $b) {
+                    $idxA = array_search($a['cid'], $this->plisio_receive_currencies);
+                    $idxB = array_search($b['cid'], $this->plisio_receive_currencies);
+
+                    $idxA = $idxA === false ? -1 : $idxA;
+                    $idxB = $idxB === false ? -1 : $idxB;
+
+                    if ($idxA < 0 && $idxB < 0) return -1;
+                    if ($idxA < 0 && $idxB >= 0) return 1;
+                    if ($idxA >= 0 && $idxB < 0) return -1;
+                    return $idxA - $idxB;
+                });
+            }
+            ob_start();
+            ?>
+          <style>
+            .plisio-list-currencies table td {
+              padding: 5px;
+            }
+          </style>
+          <tr valign="top" class="plisio-list-currencies">
+            <th scope="row" class="titledesc">Cryptocurrency:</th>
+            <td>
+              <!-- any -->
+              <table cellspacing="0">
+                <tr>
+                  <td>
+                      <?php if (empty($this->plisio_receive_currencies) || count($this->plisio_receive_currencies) === count($receive_currencies)): ?>
+                        <input type="checkbox" value="" id="entry_currency_0" checked="checked"/>
+                      <?php else: ?>
+                        <input type="checkbox" value="" id="entry_currency_0"/>
+                      <?php endif; ?>
+                    <label for="entry_currency_0">Any</label></td>
+                </tr>
+              </table>
+              <hr>
+              <!-- choose some -->
+              <table class="wc_input_table sortable" cellspacing="0" style="max-width: 400px;">
+                <tbody class="ui-sortable">
+                <?php if (empty($this->plisio_receive_currencies) || count($this->plisio_receive_currencies) === count($receive_currencies)): ?>
+                    <?php foreach ($receive_currencies as $key => $currency): ?>
+                    <tr class="ui-sortable-handle">
+                      <td>
+                        <input type="checkbox" name="woocommerce_plisio_receive_currencies[]"
+                               value="<?= $currency['cid'] ?>"
+                               id="entry_currency_<?= ++$key ?>" checked="checked"
+                        />
+                        <label for="entry_currency_<?= $key ?>"><?= $currency['name'] ?> (<?= $currency['currency'] ?>
+                          )</label>
+                      </td>
+                      <td class="sort" style="width: 15px;"></td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <?php foreach ($receive_currencies as $key => $currency): ?>
+                    <tr class="ui-sortable-handle">
+                      <td>
+                          <?php $isChecked = (is_array($this->plisio_receive_currencies) && in_array($currency['cid'], $this->plisio_receive_currencies)); ?>
+                        <input type="checkbox" name="woocommerce_plisio_receive_currencies[]"
+                               value="<?= $currency['cid'] ?>"
+                               id="entry_currency_<?= ++$key ?>"
+                            <?= $isChecked ? 'checked="checked"' : '' ?>
+                        />
+                        <label for="entry_currency_<?= $key ?>"><?= $currency['name'] ?> (<?= $currency['currency'] ?>
+                          )</label>
+                      </td>
+                      <td class="sort" style="width: 15px;"></td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                </tbody>
+              </table>
+              <p class="description">Drag and drop items to set order.</p>
+            </td>
+          </tr>
+          <script>
+            document.addEventListener('DOMContentLoaded', function () {
+              var checkAny = document.getElementById('entry_currency_0');
+              var checkSome = document.querySelectorAll('[name="woocommerce_plisio_receive_currencies[]"]');
+
+              checkAny.addEventListener('click', function (event) {
+                for (var i = 0; i < checkSome.length; i++) {
+                  checkSome[i].checked = event.target.checked;
+                }
+              });
+
+              checkSome.forEach(function (element) {
+                element.addEventListener('click', function () {
+                  var values = 0;
+                  for (var i = 0; i < checkSome.length; i++) {
+                    if (checkSome[i].checked) {
+                      values++;
+                    }
+                  }
+                  checkAny.checked = (values === checkSome.length);
+                });
+              });
+
+              document.querySelector('form').addEventListener('submit', function(event) {
+                var checked = 0;
+                Array.prototype.forEach.call(checkSome, function (element) {
+                  if (element.checked) checked += 1;
+                });
+                if (!checked) {
+                  event.preventDefault();
+                  alert('You must check at least one cryptocurrency.')
+                }
+              });
+            });
+          </script>
+            <?php
+            return ob_get_clean();
+        }
+
+
+        public
+        function validate_receive_currencies_field()
+        {
+            $post = isset( $_POST[$this->plugin_id . $this->id . '_receive_currencies'] ) ? (array) $_POST[$this->plugin_id . $this->id . '_receive_currencies'] : array();
+            if (empty($post))  return false;
+            $post = array_map( 'esc_attr', $post );
+            return $post;
+        }
+
+
+        public
+        function generate_order_statuses_html()
         {
             ob_start();
 
@@ -242,45 +412,46 @@ function plisio_init()
             $storedSettings = get_option('woocommerce_plisio_settings');
             $selectedStatuses = $storedSettings['order_statuses'];
             ?>
-            <tr valign="top">
-                <th scope="row" class="titledesc">Order Statuses:</th>
-                <td class="forminp" id="plisio_order_statuses">
-                    <table cellspacing="0">
-                        <?php
-                        foreach ($plisioStatuses as $status => $statusTitle) {
-                            if (!isset($selectedStatuses[$status]) || empty($currentStatus) === true) {
-                                $currentStatus = $defaultStatuses[$status];
-                            } else {
-                                $currentStatus = $selectedStatuses[$status];
+          <tr valign="top">
+            <th scope="row" class="titledesc">Order Statuses:</th>
+            <td class="forminp" id="plisio_order_statuses">
+              <table cellspacing="0">
+                  <?php
+                  foreach ($plisioStatuses as $status => $statusTitle) {
+                      if (!isset($selectedStatuses[$status]) || empty($currentStatus) === true) {
+                          $currentStatus = $defaultStatuses[$status];
+                      } else {
+                          $currentStatus = $selectedStatuses[$status];
+                      }
+                      ?>
+                    <tr>
+                      <th><?php echo $statusTitle; ?></th>
+                      <td>
+                        <select name="woocommerce_plisio_order_statuses[<?php echo $status; ?>]">
+                            <?php
+                            foreach ($wcStatuses as $wcStatus => $wcStatusTitle) {
+                                if ($currentStatus == $wcStatus)
+                                    echo "<option value=\"$wcStatus\" selected>$wcStatusTitle</option>";
+                                else
+                                    echo "<option value=\"$wcStatus\">$wcStatusTitle</option>";
                             }
                             ?>
-                            <tr>
-                                <th><?php echo $statusTitle; ?></th>
-                                <td>
-                                    <select name="woocommerce_plisio_order_statuses[<?php echo $status; ?>]">
-                                       <?php
-                                        foreach ($wcStatuses as $wcStatus => $wcStatusTitle) {
-                                            if ($currentStatus == $wcStatus)
-                                                echo "<option value=\"$wcStatus\" selected>$wcStatusTitle</option>";
-                                            else
-                                                echo "<option value=\"$wcStatus\">$wcStatusTitle</option>";
-                                        }
-                                        ?>
-                                    </select>
-                                </td>
-                            </tr>
-                            <?php
-                        }
-                        ?>
-                    </table>
-                </td>
-            </tr>
+                        </select>
+                      </td>
+                    </tr>
+                      <?php
+                  }
+                  ?>
+              </table>
+            </td>
+          </tr>
             <?php
 
             return ob_get_clean();
         }
 
-        public function validate_order_statuses_field()
+        public
+        function validate_order_statuses_field()
         {
             $orderStatuses = $this->get_option('order_statuses');
 
@@ -290,7 +461,8 @@ function plisio_init()
             return $orderStatuses;
         }
 
-        public function save_order_statuses()
+        public
+        function save_order_statuses()
         {
             $plisioStatuses = $this->plisioStatuses();
             $wcStatuses = wc_get_order_statuses();
@@ -315,7 +487,8 @@ function plisio_init()
             }
         }
 
-        private function plisioStatuses()
+        private
+        function plisioStatuses()
         {
             return array(
                 'pending' => 'Pending',
@@ -327,7 +500,9 @@ function plisio_init()
             );
         }
 
-        private function woocommenceStatuses(){
+        private
+        function woocommenceStatuses()
+        {
             return array(
                 'pending' => 'wc-pending',
                 'completed' => 'wc-completed',
