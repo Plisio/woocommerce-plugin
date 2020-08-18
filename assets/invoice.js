@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         var txUrl = getTxUrl(response.tx_urls);
                         if (['pending'].includes(response.status)) {
                             var confirmString = response.expected_confirmations > 1 ? 'confirmations' : 'confirmation';
-                            resultContent += '<div class="invoice__result text-center">' +
+                            resultContent += '<div class="invoice__result invoice__row_center_vertical">' +
                                 '<svg class="invoice__icon_status _loader" xmlns="http://www.w3.org/2000/svg"><use xlink:href="#icon_invoice_loader"></use></svg>' +
                                 '<h3>Waiting for ' + (Number(response.expected_confirmations) - Number(response.confirmations)) + ' of ' + response.expected_confirmations + ' ' + confirmString + '</h3>' +
                                 '<p>Please, wait until network confirms your payment. It usually takes 15-60 minutes.</p>' +
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 'Check my transaction</a>' +
                                 '</div>';
                         } else if (['finish', 'completed'].includes(response.status)) {
-                            resultContent += '<div class="invoice__result text-center">' +
+                            resultContent += '<div class="invoice__result invoice__row_center_vertical">' +
                                 '<svg class="invoice__icon_status" xmlns="http://www.w3.org/2000/svg"><use xlink:href="#icon_invoice_check"></use></svg>' +
                                 '<h3>Payment complete</h3>' +
                                 '<a href="' + txUrl + '" title="Check my transaction" target="_blank" rel="noopener">' +
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 'Check my transaction</a>' +
                                 '</div>';
                         } else if (['mismatch'].includes(response.status)) {
-                            resultContent += '<div class="invoice__result text-center">' +
+                            resultContent += '<div class="invoice__result invoice__row_center_vertical">' +
                                 '<svg class="invoice__icon_status" xmlns="http://www.w3.org/2000/svg"><use xlink:href="#icon_invoice_overpaid"></use></svg>' +
                                 '<h3>The order has been overpaid</h3>' +
                                 '<p>You have payed ' + (Math.abs(response.pending_amount) + Number(response.amount)).toFixed(8) + ' ' + response.currency + ', ' +
@@ -199,21 +199,21 @@ document.addEventListener('DOMContentLoaded', function () {
                                 '</div>';
                         } else if (['expired', 'cancelled'].includes(response.status)) {
                             if (response.pending_amount < response.amount) {
-                                resultContent += '<div class="invoice__result text-center">' +
+                                resultContent += '<div class="invoice__result invoice__row_center_vertical">' +
                                     '<svg class="invoice__icon_status" xmlns="http://www.w3.org/2000/svg"><use xlink:href="#icon_invoice_expired"></use></svg>' +
                                     '<h3>The order has not been fully paid</h3>' +
                                     '<p>We have received ' + (response.amount - response.pending_amount).toFixed(8) + ' ' + response.currency + ' of ' + elInvoice.dataset.invoiceAmount + ' '
                                     + elInvoice.dataset.invoiceCurrency + ' required. To get your payment back, please, contact store`s support.</p>' +
                                     '</div>';
                             } else {
-                                resultContent += '<div class="invoice__result text-center">' +
+                                resultContent += '<div class="invoice__result invoice__row_center_vertical">' +
                                     '<svg class="invoice__icon_status" xmlns="http://www.w3.org/2000/svg"><use xlink:href="#icon_invoice_expired"></use></svg>' +
                                     '<h3>The order has expired</h3>' +
                                     '<p>Please, <a href="/" title="go back">go back</a> and create a new one.</p>' +
                                     '</div>';
                             }
                         } else if (['error'].includes(response.status)) {
-                            resultContent += '<div class="invoice__result text-center">' +
+                            resultContent += '<div class="invoice__result invoice__row_center_vertical">' +
                                 '<svg class="invoice__icon_status" xmlns="http://www.w3.org/2000/svg"><use xlink:href="#icon_invoice_exclamation"></use></svg>' +
                                 '<h3>Ooops...</h3>' +
                                 '<p>Something went wrong with this operation. Please, contact store`s support, so we could figure this out.</p>' +

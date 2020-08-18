@@ -8,19 +8,19 @@
     <symbol viewBox="0 0 20 18" id="icon_invoice_link_external" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M878.614 566.606c.067.07.1.16.1.27v3.75c0 .93-.314 1.725-.943 2.385-.629.66-1.386.99-2.271.99h-9.286c-.885 0-1.642-.33-2.271-.99-.629-.66-.943-1.455-.943-2.385v-9.752c0-.93.314-1.724.943-2.385.629-.66 1.386-.99 2.271-.99h7.857a.34.34 0 0 1 .257.105c.067.07.1.16.1.27v.75c0 .11-.033.2-.1.27a.34.34 0 0 1-.257.105h-7.857a1.68 1.68 0 0 0-1.261.551c-.35.367-.524.808-.524 1.324v9.752c0 .515.174.957.524 1.324.35.367.77.55 1.261.55h9.286a1.68 1.68 0 0 0 1.261-.55c.35-.367.525-.809.525-1.324v-3.75c0-.11.033-.2.1-.27a.338.338 0 0 1 .257-.106h.714c.104 0 .19.035.257.106zm4.386-9.857v6c0 .204-.07.38-.212.528a.67.67 0 0 1-.502.223.67.67 0 0 1-.503-.223l-1.964-2.063-7.277 7.642a.345.345 0 0 1-.256.117.345.345 0 0 1-.257-.117l-1.272-1.336a.38.38 0 0 1 0-.54l7.276-7.64-1.964-2.064a.74.74 0 0 1-.212-.527c0-.203.07-.38.212-.527a.67.67 0 0 1 .502-.223h5.714c.194 0 .361.074.503.223a.74.74 0 0 1 .212.527z"
-        transform="translate(-863 -556)"/>
+        transform="translate(-863 -556)" fill="#23a1d1" />
     </symbol>
     <symbol viewBox="0 0 15 15" id="icon_invoice_loader" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M795 172.75h-.004c.003.027.004.055.004.083 0 .552-.433 1-.968 1-.019 0-.038 0-.057-.002a7.138 7.138 0 0 1-1.841 3.956 6.941 6.941 0 0 1-2.213 1.603 6.831 6.831 0 0 1-5.37.115 7.094 7.094 0 0 1-2.338-1.542 7.424 7.424 0 0 1-1.604-2.367 7.665 7.665 0 0 1-.607-2.846c-.021-.98.145-1.972.495-2.894a7.642 7.642 0 0 1 1.545-2.496 7.424 7.424 0 0 1 2.37-1.712 7.301 7.301 0 0 1 5.741-.115 7.579 7.579 0 0 1 2.494 1.65 7.924 7.924 0 0 1 1.71 2.53 8.18 8.18 0 0 1 .643 3.037zm-1.072 1.077a.988.988 0 0 1-.86-1.077h-.003a6.195 6.195 0 0 0-.385-2.32 6.134 6.134 0 0 0-1.23-2.01 5.973 5.973 0 0 0-1.9-1.387 5.89 5.89 0 0 0-4.63-.115 6.128 6.128 0 0 0-2.023 1.325 6.42 6.42 0 0 0-1.395 2.044 6.71 6.71 0 0 0-.112 4.974c.3.801.756 1.544 1.336 2.172a6.458 6.458 0 0 0 2.056 1.495 6.36 6.36 0 0 0 5 .116 6.612 6.612 0 0 0 2.181-1.434 6.922 6.922 0 0 0 1.5-2.205 7.067 7.067 0 0 0 .465-1.578z"
-        transform="translate(-780 -165)"/>
+        transform="translate(-780 -165)" fill="#23a1d1" />
     </symbol>
     <symbol viewBox="0 0 96 96" id="icon_invoice_expired" xmlns="http://www.w3.org/2000/svg">
       <path
-        d="M52.617 95.73c19.368-2.156 34.89-17.55 37.099-36.808 2.9-25.18-16.784-46.614-41.458-46.889V.737c0-.627-.789-.96-1.321-.568l-23.392 17.08c-.394.295-.394.863 0 1.158l23.392 17.08c.532.393 1.321.04 1.321-.568V23.643c17.337.274 31.222 14.943 30.038 32.475-1.006 15.08-13.372 27.317-28.539 28.278-16.074 1.02-29.742-10.394-32.188-25.494-.454-2.804-2.919-4.843-5.759-4.843-3.53 0-6.292 3.118-5.74 6.589C9.503 82.16 29.483 98.3 52.618 95.73z"/>
+        d="M52.617 95.73c19.368-2.156 34.89-17.55 37.099-36.808 2.9-25.18-16.784-46.614-41.458-46.889V.737c0-.627-.789-.96-1.321-.568l-23.392 17.08c-.394.295-.394.863 0 1.158l23.392 17.08c.532.393 1.321.04 1.321-.568V23.643c17.337.274 31.222 14.943 30.038 32.475-1.006 15.08-13.372 27.317-28.539 28.278-16.074 1.02-29.742-10.394-32.188-25.494-.454-2.804-2.919-4.843-5.759-4.843-3.53 0-6.292 3.118-5.74 6.589C9.503 82.16 29.483 98.3 52.618 95.73z" fill="#23a1d1"  />
     </symbol>
     <symbol viewBox="0 0 70 100" id="icon_invoice_overpaid" xmlns="http://www.w3.org/2000/svg">
-      <g transform="translate(-165 -116)">
+      <g transform="translate(-165 -116)" fill="#23a1d1" >
         <path d="M206.55 182.32h3.158v3.158h-3.158z"/>
         <path d="M226.55 182.32h3.158v3.158h-3.158z"/>
         <path
@@ -40,18 +40,18 @@
     </symbol>
     <symbol viewBox="0 0 16 16" id="icon_invoice_exclamation" xmlns="http://www.w3.org/2000/svg">
       <path
-        d="M15.86 13.116L8.84 1.474C8.661 1.18 8.343 1 8 1s-.662.18-.84.474L.14 13.116c-.182.302-.187.68-.013.988.174.308.5.498.853.498h14.04c.353 0 .68-.19.853-.498.174-.308.169-.686-.014-.988zm-7.855-8.09c.403 0 .744.228.744.631 0 1.23-.144 2.998-.144 4.228 0 .32-.352.455-.6.455-.33 0-.61-.134-.61-.455 0-1.23-.144-2.997-.144-4.228 0-.403.33-.63.754-.63zm.01 7.62c-.454 0-.795-.373-.795-.797 0-.434.34-.795.796-.795.423 0 .785.361.785.795 0 .424-.362.796-.785.796z"/>
+        d="M15.86 13.116L8.84 1.474C8.661 1.18 8.343 1 8 1s-.662.18-.84.474L.14 13.116c-.182.302-.187.68-.013.988.174.308.5.498.853.498h14.04c.353 0 .68-.19.853-.498.174-.308.169-.686-.014-.988zm-7.855-8.09c.403 0 .744.228.744.631 0 1.23-.144 2.998-.144 4.228 0 .32-.352.455-.6.455-.33 0-.61-.134-.61-.455 0-1.23-.144-2.997-.144-4.228 0-.403.33-.63.754-.63zm.01 7.62c-.454 0-.795-.373-.795-.797 0-.434.34-.795.796-.795.423 0 .785.361.785.795 0 .424-.362.796-.785.796z" fill="#23a1d1" />
     </symbol>
     <symbol viewBox="0 0 96 96" id="icon_invoice_check" xmlns="http://www.w3.org/2000/svg">
       <path
-        d="M1.107 51.6C.37 50.88 0 49.8 0 49.08s.37-1.8 1.107-2.52l5.17-5.04c1.477-1.44 3.692-1.44 5.17 0l.368.36 20.308 21.24c.739.72 1.846.72 2.584 0l49.478-50.04h.369c1.477-1.44 3.692-1.44 5.17 0l5.169 5.04c1.476 1.44 1.476 3.6 0 5.04L35.815 82.92c-.738.72-1.477 1.08-2.584 1.08-1.108 0-1.846-.36-2.585-1.08l-28.8-30.24-.739-1.08z"/>
+        d="M1.107 51.6C.37 50.88 0 49.8 0 49.08s.37-1.8 1.107-2.52l5.17-5.04c1.477-1.44 3.692-1.44 5.17 0l.368.36 20.308 21.24c.739.72 1.846.72 2.584 0l49.478-50.04h.369c1.477-1.44 3.692-1.44 5.17 0l5.169 5.04c1.476 1.44 1.476 3.6 0 5.04L35.815 82.92c-.738.72-1.477 1.08-2.584 1.08-1.108 0-1.846-.36-2.585-1.08l-28.8-30.24-.739-1.08z" fill="#23a1d1" />
     </symbol>
   </defs>
 </svg>
 
     <div
-  id="invoice"
-  class="invoice"
+      id="invoice"
+      class="invoice"
       data-invoice-id="<?php echo htmlspecialchars($order['plisio_invoice_id']); ?>"
       data-invoice-amount="<?php echo number_format($order['amount'], 8); ?>"
       data-invoice-currency="<?php echo htmlspecialchars($order['currency']); ?>"
@@ -145,7 +145,7 @@
             </div>
           </div>
         <?php elseif ($order['status'] == 'pending' && $order['pending_amount'] <= 0): ?>
-          <div class="invoice__result text-center">
+          <div class="invoice__result invoice__row_center_vertical">
             <svg class="invoice__icon_status _loader" xmlns="http://www.w3.org/2000/svg">
               <use xlink:href="#icon_invoice_loader"></use>
             </svg>
@@ -161,7 +161,7 @@
             </a>
           </div>
         <?php elseif (in_array($order['status'], ['finish', 'completed'])): ?>
-          <div class="invoice__result text-center">
+          <div class="invoice__result invoice__row_center_vertical">
             <svg class="invoice__icon_status" xmlns="http://www.w3.org/2000/svg">
               <use xlink:href="#icon_invoice_check"></use>
             </svg>
@@ -174,7 +174,7 @@
             </a>
           </div>
         <?php elseif ($order['status'] == 'mismatch'): ?>
-          <div class="invoice__result text-center">
+          <div class="invoice__result invoice__row_center_vertical">
             <svg class="invoice__icon_status" xmlns="http://www.w3.org/2000/svg">
               <use xlink:href="#icon_invoice_overpaid"></use>
             </svg>
@@ -190,7 +190,7 @@
           </div>
         <?php elseif (in_array($order['status'], ['expired', 'cancelled'])): ?>
             <?php if ($order['pending_amount'] < $order['amount']): ?>
-            <div class="invoice__result text-center">
+            <div class="invoice__result invoice__row_center_vertical">
               <svg class="invoice__icon_status" xmlns="http://www.w3.org/2000/svg">
                 <use xlink:href="#icon_invoice_expired"></use>
               </svg>
@@ -200,7 +200,7 @@
                 To get your payment back, please, contact store`s support.</p>
             </div>
             <?php else: ?>
-            <div class="invoice__result text-center">
+            <div class="invoice__result invoice__row_center_vertical">
               <svg class="invoice__icon_status" xmlns="http://www.w3.org/2000/svg">
                 <use xlink:href="#icon_invoice_expired"></use>
               </svg>
@@ -209,7 +209,7 @@
             </div>
             <?php endif; ?>
         <?php else: ?>
-          <div class="invoice__result text-center">
+          <div class="invoice__result invoice__row_center_vertical">
             <svg class="invoice__icon_status" xmlns="http://www.w3.org/2000/svg">
               <use xlink:href="#icon_invoice_exclamation"></use>
             </svg>
