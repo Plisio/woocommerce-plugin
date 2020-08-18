@@ -310,7 +310,7 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
                             break;
                         case 'expired':
                             if ((float)$request['source_amount'] <= 0) {
-                                $wcOrderStatus = $orderStatuses['canceled'];
+                                $wcOrderStatus = $orderStatuses['cancelled'];
                                 $order->add_order_note(__('Buyer did not pay within the required time and the invoice expired.',
                                     'plisio'));
                             } else {
@@ -318,6 +318,12 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
                             }
                             $order->update_status($wcOrderStatus);
 
+                            break;
+                        case 'cancelled':
+                            $wcOrderStatus = $orderStatuses['cancelled'];
+                            $order->add_order_note(__('Buyer did not pay within the required time and the invoice expired.',
+                                'plisio'));
+                            $order->update_status($wcOrderStatus);
                             break;
                     }
                 } catch (Exception $e) {
