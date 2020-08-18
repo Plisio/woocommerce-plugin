@@ -162,7 +162,7 @@
 
   &__icon_status {
     display: block;
-    margin: 0 auto 2em;
+    margin: 0 auto;
     width: 80px;
     height: 80px;
     fill: #23a1d1;
@@ -186,10 +186,24 @@
     }
   }
 
+  &__row_center_vertical {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__result {
+    padding: 3rem 0;
+    text-align: center;
+  }
+
+  h3 {
+    margin: 1rem auto;
+  }
 }
 
 
-//sass --watch plisio.scss:plisio.css --style=compressed --no-source-map
 
 
 
