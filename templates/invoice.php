@@ -180,7 +180,7 @@
             </svg>
             <h3>The order has been overpaid</h3>
             <p>You have payed <?php echo number_format((float)$order['amount'] + (float)$order['pending_amount'] * (-1), 8, '.', ''); ?> <?php echo htmlspecialchars($order['currency']); ?>,
-              it is more than required sum. In case of inconvenience, please, contact store`s support.</p>
+              it is more than required sum. In case of inconvenience, please, contact support.</p>
             <a href="<?php echo htmlspecialchars($order['txUrl']); ?>" title="Check my transaction" target="_blank" rel="noopener">
               <svg class="invoice__icon_btn" xmlns="http://www.w3.org/2000/svg">
                 <use xlink:href="#icon_invoice_link_external"></use>
@@ -197,7 +197,7 @@
               <h3>The order has not been fully paid</h3>
               <p>We have received <?php echo number_format((float)$order['amount'] - (float)$order['pending_amount'], 8, '.', ''); ?> <?php echo htmlspecialchars($order['currency']); ?>
                 of <?php echo number_format((float)$order['amount'], 8, '.', ''); ?>  <?php echo htmlspecialchars($order['currency']); ?> required.
-                To get your payment back, please, contact store`s support.</p>
+                To get your payment back, please, contact support.</p>
             </div>
             <?php else: ?>
             <div class="invoice__result invoice__row_center_vertical">
@@ -214,7 +214,7 @@
               <use xlink:href="#icon_invoice_exclamation"></use>
             </svg>
             <h3>Ooops...</h3>
-            <p>Something went wrong with this operation. Please, contact store`s support, so we could figure this
+            <p>Something went wrong with this operation. Please, contact support, so we could figure this
               out.</p>
           </div>
         <?php endif; ?>
