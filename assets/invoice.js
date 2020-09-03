@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 '<svg class="invoice__icon_status" xmlns="http://www.w3.org/2000/svg"><use xlink:href="#icon_invoice_overpaid"></use></svg>' +
                                 '<h3>The order has been overpaid</h3>' +
                                 '<p>You have payed ' + (Math.abs(response.pending_amount) + Number(response.amount)).toFixed(8) + ' ' + response.currency + ', ' +
-                                'it is more than required sum. In case of inconvenience, please, contact store`s support.</p>' +
+                                'it is more than required sum. In case of inconvenience, please, contact support.</p>' +
                                 '<a href="' + txUrl + '" title="Check my transaction" target="_blank" rel="noopener">' +
                                 '<svg class="invoice__icon_btn" xmlns="http://www.w3.org/2000/svg"><use xlink:href="#icon_invoice_link_external"></use></svg>' +
                                 'Check my transaction</a>' +
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     '<svg class="invoice__icon_status" xmlns="http://www.w3.org/2000/svg"><use xlink:href="#icon_invoice_expired"></use></svg>' +
                                     '<h3>The order has not been fully paid</h3>' +
                                     '<p>We have received ' + (response.amount - response.pending_amount).toFixed(8) + ' ' + response.currency + ' of ' + elInvoice.dataset.invoiceAmount + ' '
-                                    + elInvoice.dataset.invoiceCurrency + ' required. To get your payment back, please, contact store`s support.</p>' +
+                                    + elInvoice.dataset.invoiceCurrency + ' required. To get your payment back, please, contact support.</p>' +
                                     '</div>';
                             } else {
                                 resultContent += '<div class="invoice__result invoice__row_center_vertical">' +
@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             resultContent += '<div class="invoice__result invoice__row_center_vertical">' +
                                 '<svg class="invoice__icon_status" xmlns="http://www.w3.org/2000/svg"><use xlink:href="#icon_invoice_exclamation"></use></svg>' +
                                 '<h3>Ooops...</h3>' +
-                                '<p>Something went wrong with this operation. Please, contact store`s support, so we could figure this out.</p>' +
+                                '<p>Something went wrong with this operation. Please, contact support, so we could figure this out.</p>' +
                                 '</div>';
                             console.error('error');
                         }
