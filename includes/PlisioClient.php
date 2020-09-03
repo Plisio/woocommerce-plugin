@@ -21,6 +21,11 @@ class PlisioClient
         return $this->apiCall('balances', array('currency' => $currency));
     }
 
+    public function getShopInfo()
+    {
+        return $this->apiCall('shops');
+    }
+
     public function getCurrencies()
     {
         return $this->guestApiCall('currencies');
@@ -72,11 +77,16 @@ class PlisioClient
         return !empty($this->secretKey);
     }
 
-    protected function getHeaders()
+    protected function getCurlOptions($url)
     {
         return [
-            'sslverify' => FALSE,
-            'headers' => [
+            CURLOPT_URL => $url,
+            CURLOPT_HTTPGET => true,
+            CURLOPT_FAILONERROR => false,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_HEADER => true,
+            CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
                 'Accept: application/json'
             ],
@@ -106,10 +116,13 @@ class PlisioClient
         try {
             $apiUrl = $this->getApiUrl($cmd . $queryString);
 
-            $response = wp_remote_get($apiUrl, $this->getHeaders());
-            $body = wp_remote_retrieve_body($response);
+            $ch = curl_init();
+            curl_setopt_array($ch, $this->getCurlOptions($apiUrl));
+            $data = curl_exec($ch);
 
-            if ($body !== FALSE) {
+            if ($data !== FALSE) {
+                $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+                $body = substr($data, $header_size);
                 $dec = $this->jsonDecode($body);
                 if ($dec !== NULL && count($dec)) {
                     return $dec;
@@ -118,7 +131,7 @@ class PlisioClient
                     return array('status' => 'error', 'message' => 'Unable to parse JSON result (' . json_last_error() . ')');
                 }
             } else {
-                throw new Exception('Bad response');
+                return array('status' => 'error', 'message' => 'cURL error: ' . curl_error($ch));
             }
         } catch (\Exception $e) {
             return array('status' => 'error', 'message' => 'Could not send request to API : ' . $apiUrl);

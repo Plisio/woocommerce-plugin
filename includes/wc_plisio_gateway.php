@@ -90,6 +90,11 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
      */
     public function qrcode_section($order_id)
     {
+        global $wp;
+
+        if (is_null($order_id)){
+            $order_id = $wp->query_vars['order-received'];
+        }
         $order = $this->order->get($order_id);
 
         if ($order) {
@@ -108,6 +113,15 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
         }
     }
 
+    public function get_icon(){
+        $plisio = new PlisioClient($this->api_key);
+        $shop = $plisio->getShopInfo();
+        if (isset($shop['data']['white_label']) && $shop['data']['white_label'] == true) {
+            return false;
+        } else {
+            return parent::get_icon();
+        }
+    }
 
     public function payment_fields()
     {
@@ -210,7 +224,9 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
             'callback_url' => trailingslashit(get_bloginfo('wpurl')) . '?wc-api=wc_plisio_gateway',
             'success_url' => add_query_arg('order-received', $order->get_id(), add_query_arg('key', $order->get_order_key(), $this->get_return_url($wcOrder))),
             'email' => $order->get_billing_email(),
-            'language' => get_locale()
+            'language' => get_locale(),
+            'plugin' => 'woocommerce',
+            'version' => PLISIO_WOOCOMMERCE_VERSION
         );
         $response = $plisio->createTransaction($data);
 
@@ -327,9 +343,11 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
                             break;
                     }
                 } catch (Exception $e) {
-                    die(get_class($e) . ': ' . $e->getMessage());
+                    error_log($e->getMessage());
                 }
             }
+        } else {
+            error_log('Plisio verifyCallbackData failed');
         }
     }
 
