@@ -26,9 +26,12 @@ class PlisioClient
         return $this->apiCall('shops');
     }
 
-    public function getCurrencies()
+    public function getCurrencies($source_currency = 'USD')
     {
-        return $this->guestApiCall('currencies');
+        $currencies = $this->guestApiCall("currencies/$source_currency");
+        return array_filter($currencies['data'], function ($currency) {
+            return $currency['hidden'] == 0;
+        });
     }
 
     public function createTransaction($req)

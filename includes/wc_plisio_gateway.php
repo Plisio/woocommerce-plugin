@@ -7,9 +7,19 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
     public $order_statuses;
     private $order;
 
+	/** @var PlisioClient */
+    private $plisio;
+
+	private function get_plisio_receive_currencies ($source_currency) {
+		$currencies = $this->plisio->getCurrencies($source_currency);
+		return array_reduce($currencies, function ($acc, $curr) {
+			$acc[$curr['cid']] = $curr;
+			return $acc;
+		}, []);
+	}
+
     public function __construct()
     {
-
         $this->id = 'plisio';
         $this->has_fields = false;
         $this->method_title = 'Plisio';
@@ -22,6 +32,7 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
         $this->description = $this->get_option('description');
         $this->api_key = $this->get_option('api_key');
         $this->order_statuses = $this->get_option('order_statuses');
+	    $this->plisio = new PlisioClient($this->api_key);
 
         $this->init_hooks();
         $this->order = new WC_Plisio_Gateway_Order();
@@ -31,6 +42,7 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
     public function init_hooks()
     {
         global $woocommerce;
+
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'save_order_statuses'));
         add_action('woocommerce_thankyou_plisio', array($this, 'thankyou'));
@@ -44,22 +56,6 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
                 $this, 'prepend_woocommerce_checkout_shortcode'
             ), 10, 4);
         }
-        add_action('wp_enqueue_scripts', array($this, 'payment_scripts'));
-    }
-
-    public function payment_scripts(){
-        global $wp;
-        wp_enqueue_style('wc_plisio', PLISIO_PLUGIN_URL . 'assets/plisio.css', array(), PLISIO_WOOCOMMERCE_VERSION);
-        wp_enqueue_script(
-            'plisio-ajax-handle',
-            PLISIO_PLUGIN_URL . 'assets/invoice.js',
-            array('jquery'),
-            PLISIO_WOOCOMMERCE_VERSION
-        );
-        wp_localize_script('plisio-ajax-handle', 'plisio_ajax', array(
-            'ajaxurl' => admin_url('admin-ajax.php'),
-            'order_id' => isset($wp->query_vars['order-received']) ? $wp->query_vars['order-received'] : null
-        ));
     }
 
     public function prepend_woocommerce_checkout_shortcode($output, $tag)
@@ -92,69 +88,53 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
     {
         global $wp;
 
-        if (is_null($order_id)){
+	    $wcOrder = wc_get_order($order_id);
+	    $shop = $this->plisio->getShopInfo();
+
+        include(implode(DIRECTORY_SEPARATOR, [PLISIO_PLUGIN_PATH, 'assets', 'language.php']));
+
+	    if (is_null($order_id)){
             $order_id = $wp->query_vars['order-received'];
         }
         $order = $this->order->get($order_id);
 
         if ($order) {
-            $order['expire_utc'] = (new DateTime($order['expire_utc']))->getTimestamp() * 1000;
-            if (isset($order['tx_urls']) && !empty($order['tx_urls'])) {
-                try {
-                    $txUrl = json_decode(stripslashes($order['tx_urls']));
-                    if (!empty($txUrl)) {
-                        $txUrl = gettype($txUrl) === 'string' ? $txUrl : $txUrl[count($txUrl) - 1];
-                        $order['txUrl'] = $txUrl;
-                    }
-                } catch (Exception $e) {
-                }
-            }
-            include(implode(DIRECTORY_SEPARATOR, [PLISIO_PLUGIN_PATH, 'templates', 'invoice.php']));
+        	$expire_utc = (new DateTime($order['expire_utc']))->getTimestamp()*1000;
+
+        	$allowed_currencies = [];
+        	$checkout_total_fiat = $wcOrder->get_total();
+
+	        $extra_commission = $shop['data']['extra_commission'];
+	        $commission_payment = $shop['data']['commission_payment'];
+
+	        $return_url = add_query_arg('order-received', $wcOrder->get_id(), add_query_arg('key', $wcOrder->get_order_key(), $this->get_return_url($wcOrder)));
+
+        	if ($order['invoice_currency_set'] != 1) {
+        		$allowed_currencies = $this->get_plisio_receive_currencies($wcOrder->get_currency());
+	        }
+
+	        if (isset($order['tx_urls']) && !empty($order['tx_urls'])) {
+		        try {
+			        $txUrl = json_decode(stripslashes($order['tx_urls']));
+			        if (!empty($txUrl)) {
+				        $txUrl = gettype($txUrl) === 'string' ? $txUrl : $txUrl[count($txUrl) - 1];
+				        $order['txUrl'] = $txUrl;
+			        }
+		        } catch (Exception $e) {
+		        }
+	        }
+	        include_once(implode(DIRECTORY_SEPARATOR, [PLISIO_PLUGIN_PATH, 'templates', 'invoice.php']));
         }
     }
 
     public function get_icon(){
-        $plisio = new PlisioClient($this->api_key);
-        $shop = $plisio->getShopInfo();
+        $shop = $this->plisio->getShopInfo();
         if (isset($shop['data']['white_label']) && $shop['data']['white_label'] == true) {
             return false;
         } else {
             return parent::get_icon();
         }
     }
-
-    public function payment_fields()
-    {
-        $plisio = new PlisioClient('');
-        $currencies = $plisio->getCurrencies();
-        if (isset($currencies['data']) && !empty($currencies['data'])) {
-            $currencies = $currencies['data'];
-            $showCurrencies = $currencies;
-            $storedSettings = get_option('woocommerce_plisio_settings');
-            $plisio_receive_currencies = [];
-            if (is_array($storedSettings) && !empty($storedSettings['receive_currencies'])) {
-                $plisio_receive_currencies = $storedSettings['receive_currencies'];
-            }
-            if (!empty($plisio_receive_currencies)) {
-                $showCurrencies = array_reduce($currencies, function ($res, $i) use ($plisio_receive_currencies) {
-                    if (in_array($i['cid'], $plisio_receive_currencies)) {
-                        $res[$i['cid']] = $i;
-                    }
-                    return $res;
-                });
-                $showCurrencies = array_replace(array_flip($plisio_receive_currencies), $showCurrencies);
-            }
-
-            $html = 'Pay with <select name="currency" class="select">';
-            foreach ($showCurrencies as $currency) {
-                $html .= '<option value="' . $currency['cid'] . '">' . $currency['name'] . '</option>';
-            }
-            $html .= '</select>';
-        }
-        echo $html;
-    }
-
-
 
     public function init_form_fields()
     {
@@ -184,9 +164,6 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
                 'description' => __('Plisio API Secret key', 'woocommerce'),
                 'default' => (empty($this->get_option('api_key')) ? '' : $this->get_option('api_key')),
             ),
-            'receive_currencies' => array(
-                'type' => 'receive_currencies'
-            ),
             'order_statuses' => array(
                 'type' => 'order_statuses'
             ),
@@ -204,31 +181,32 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
     {
         $order = new WC_Order($order_id);
 
-        $plisio = new PlisioClient($this->api_key);
+	    $plisio_receive_currencies = $this->get_plisio_receive_currencies($order->get_currency());
+	    $plisio_receive_cids = array_keys($plisio_receive_currencies);
 
         $description = array();
         foreach ($order->get_items('line_item') as $item) {
             $description[] = $item['qty'] . ' × ' . $item['name'];
         }
 
-        $wcOrder = wc_get_order($order_id);
+	    $amount = $order->get_total();
 
         $data = array(
             'order_number' => $order->get_id(),
             'order_name' => get_bloginfo('name', 'raw') . ' Order #' . $order->get_id(),
-            'description' => implode($description, ', '),
-            'source_amount' => number_format($order->get_total(), 8, '.', ''),
+            'description' => implode( ', ', $description ),
+            'source_amount' => number_format($amount, 8, '.', ''),
             'source_currency' => get_woocommerce_currency(),
-            'currency' => sanitize_text_field($_POST['currency']),
+            'currency' => $plisio_receive_cids[0],
             'cancel_url' => $order->get_cancel_order_url(),
             'callback_url' => trailingslashit(get_bloginfo('wpurl')) . '?wc-api=wc_plisio_gateway',
-            'success_url' => add_query_arg('order-received', $order->get_id(), add_query_arg('key', $order->get_order_key(), $this->get_return_url($wcOrder))),
+            'success_url' => add_query_arg('order-received', $order->get_id(), add_query_arg('key', $order->get_order_key(), $this->get_return_url($order))),
             'email' => $order->get_billing_email(),
             'language' => get_locale(),
             'plugin' => 'woocommerce',
             'version' => PLISIO_WOOCOMMERCE_VERSION
         );
-        $response = $plisio->createTransaction($data);
+        $response = $this->plisio->createTransaction($data);
 
         if ($response && $response['status'] !== 'error' && !empty($response['data'])) {
             update_post_meta($order_id, 'plisio_order_token', $response['data']['txn_id']);
@@ -248,6 +226,7 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
                 'redirect' => $redirect
             );
         } else {
+        	wc_add_notice('Error occurred while processing the payment:  ' . json_decode($response['data']['message'], true)['amount'], 'error');
             return array(
                 'result' => 'failure',
             );
@@ -350,37 +329,6 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
             error_log('Plisio verifyCallbackData failed');
         }
     }
-
-
-    public function generate_receive_currencies_html()
-    {
-        $plisio = new PlisioClient('');
-        $currencies = $plisio->getCurrencies();
-        if (empty($currencies) || empty($currencies['data'])) {
-            return false;
-        }
-        $supported_currencies = $currencies['data'];
-        $storedSettings = get_option('woocommerce_plisio_settings');
-        if (is_array($storedSettings) && !empty($storedSettings['receive_currencies'])) {
-            $plisio_receive_currencies = $storedSettings['receive_currencies'];
-        }
-        if (!empty($plisio_receive_currencies)) {
-            usort($supported_currencies, function ($a, $b) use ($plisio_receive_currencies) {
-                $idxA = array_search($a['cid'], $plisio_receive_currencies);
-                $idxB = array_search($b['cid'], $plisio_receive_currencies);
-
-                $idxA = $idxA === false ? -1 : $idxA;
-                $idxB = $idxB === false ? -1 : $idxB;
-
-                if ($idxA < 0 && $idxB < 0) return -1;
-                if ($idxA < 0 && $idxB >= 0) return 1;
-                if ($idxA >= 0 && $idxB < 0) return -1;
-                return $idxA - $idxB;
-            });
-        }
-        include(implode(DIRECTORY_SEPARATOR, [PLISIO_PLUGIN_PATH, 'templates', 'currencies.php']));
-    }
-
 
     public function validate_receive_currencies_field()
     {
