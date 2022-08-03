@@ -21,6 +21,7 @@ class WC_Plisio_Gateway_Ajax
         add_action('wp_ajax_plisio_update_invoice', array($this, 'plisio_update_invoice'));
         add_action('wp_ajax_nopriv_plisio_update_invoice', array($this, 'plisio_update_invoice'));
         add_action('wp_ajax_choose_currency', array($this, 'plisio_choose_currency'));
+		add_action('wp_ajax_nopriv_choose_currency', array($this, 'plisio_choose_currency'));
     }
 
     public function plisio_update_invoice()
