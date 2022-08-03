@@ -228,15 +228,15 @@
     </defs>
 </svg>
 
-<?php $invoice_is_currency_awaiting = count($allowed_currencies) > 1 and in_array($order['status'], ['new']); ?>
-<?php $invoice_is_min_sum_in_error = count($allowed_currencies) == 1 and $order['amount'] < $allowed_currencies[$order['currency']]['min_sum_in']; ?>
-<?php $invoice_is_processing = $invoice_is_min_sum_in_error != true and in_array($order['status'], ['new', 'pending']); ?>
-<?php $invoice_is_payment_waiting = in_array($order['status'], ['new']) or (in_array($order['status'], ['pending']) and $order['pending_amount'] > 0); ?>
-<?php $invoice_is_waiting_for_confirmations = in_array($order['status'], ['pending']) and $order['pending_amount'] <= 0; ?>
+<?php $invoice_is_currency_awaiting = ((count($allowed_currencies) > 1) and (in_array($order['status'], ['new']))); ?>
+<?php $invoice_is_min_sum_in_error = ((count($allowed_currencies) == 1) and ($order['amount'] < reset($allowed_currencies)['min_sum_in'])); ?>
+<?php $invoice_is_processing = (($invoice_is_min_sum_in_error != true) and (in_array($order['status'], ['new', 'pending']))); ?>
+<?php $invoice_is_payment_waiting = ((in_array($order['status'], ['new'])) or ((in_array($order['status'], ['pending'])) and ($order['pending_amount'] > 0))); ?>
+<?php $invoice_is_waiting_for_confirmations = ((in_array($order['status'], ['pending'])) and ($order['pending_amount'] <= 0)); ?>
 <?php $invoice_is_overpaid = in_array($order['status'], ['mismatch']); ?>
 <?php $invoice_is_finished = in_array($order['status'], ['finish', 'completed']); ?>
 <?php $invoice_is_expired = in_array($order['status'], ['expired', 'cancelled']); ?>
-<?php $invoice_is_underpaid = $invoice_is_expired and $order['pending_amount'] < $order['amount']; ?>
+<?php $invoice_is_underpaid = (($invoice_is_expired) and ($order['pending_amount'] < $order['amount'])); ?>
 <?php $invoice_is_error = in_array($order['status'], ['error']); ?>
 
 <div class="invoice__wrapper container">
@@ -294,7 +294,7 @@
 								<?php  } else if ($commission_payment == 1) { ?>
 									<?php $currencyAmount = $order['amount'] / $order['source_rate'] * $allowed_curr['fiat_rate']; ?>
 								<?php  } else if ($commission_payment == 2) { ?>
-									<?php  $currencyAmount = ($checkout_total_fiat + ($checkout_total_fiat * ($allowed_curr['invoice_comission_percentage'] + $extra_comission) / 100)) * $allowed_curr['fiat_rate']; ?>
+									<?php  $currencyAmount = ($checkout_total_fiat + ($checkout_total_fiat * ($allowed_curr['invoice_commission_percentage'] + $extra_commission) / 100)) * $allowed_curr['fiat_rate']; ?>
 								<?php  } ?>
                                 <div class="invoice__currencyItem">
                                     <label class="invoice__input_radioLabel

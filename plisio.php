@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name: Plisio Payment Gateway for WooCommerce
- * Plugin URI: https://github.com/Plisio/woocommerce-plugin/releases/download/v1.0.5/plisio-gateway-for-woocommerce-1.0.5.zip
+ * Plugin URI: https://github.com/Plisio/woocommerce-plugin/releases/download/v1.0.7/plisio-gateway-for-woocommerce-1.0.7.zip
  * Description: Accept cryptocurrencies via Plisio in your WooCommerce store
- * Version: 1.0.5
+ * Version: 1.0.7
  * Author: Plisio
  * Author URI: http://plisio.net/
  * License: MIT
@@ -20,7 +20,7 @@ function plisio_init()
     define('PLISIO_PLUGIN_PATH', dirname(__FILE__));
     define('PLISIO_PLUGIN_DIR_NAME', basename(PLISIO_PLUGIN_PATH));
     define('PLISIO_PLUGIN_URL', plugins_url(PLISIO_PLUGIN_DIR_NAME . '/'));
-    define('PLISIO_WOOCOMMERCE_VERSION', '1.0.5');
+    define('PLISIO_WOOCOMMERCE_VERSION', '1.0.7');
 
     require_once dirname(__FILE__) . '/includes/wc_plisio_gateway.php';
     require_once dirname(__FILE__) . '/includes/wc_plisio_gateway_order.php';
