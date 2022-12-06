@@ -14,42 +14,6 @@ class WC_Plisio_Gateway_Order
 		return $invalid;
 	}
 
-	public function setNewCurrency($data) {
-		global $wpdb;
-
-		$invalid = $this->validateRequiredData($data, ['wallet_hash']);
-		if (count($invalid) === 0) {
-			try {
-				$orderTable = $wpdb->prefix . 'plisio_order';
-				$where = [
-					'order_id' => $data['order_id'],
-					'plisio_invoice_id' => $data['plisio_invoice_id']
-				];
-				$data = $this->prepareOrderData($data, ['amount', 'pending_amount', 'wallet_hash', 'status', 'psys_cid', 'currency','qr_code', 'expire_utc', 'qr_code', 'source_currency', 'source_rate', 'expected_confirmations', 'tx_urls']);
-				$data['invoice_currency_set'] = true;
-				return $wpdb->update($orderTable, $data, $where);
-			} catch (Exception $e) {
-				error_log('Plisio::setNewCurrency exception: ' . $e->getMessage());
-			}
-		} else {
-			error_log('Plisio::setNewCurrency ' . implode(', ', $invalid) . ' fields are missing');
-		}
-		return false;
-
-	}
-
-	public function setInvoiceCurrencyStatus($data) {
-		global $wpdb;
-
-		$orderTable = $wpdb->prefix . 'plisio_order';
-		$where = [
-			'order_id' => $data['order_id'],
-			'plisio_invoice_id' => $data['plisio_invoice_id']
-		];
-		$key['invoice_currency_set'] = true;
-		return $wpdb->update($orderTable, $key, $where);
-	}
-
     public function get($order_id)
     {
         global $wpdb;
