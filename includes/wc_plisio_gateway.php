@@ -10,14 +10,6 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
 	/** @var PlisioClient */
     private $plisio;
 
-	private function get_plisio_receive_currencies ($source_currency) {
-		$currencies = $this->plisio->getCurrencies($source_currency);
-		return array_reduce($currencies, function ($acc, $curr) {
-			$acc[$curr['cid']] = $curr;
-			return $acc;
-		}, []);
-	}
-
     public function __construct()
     {
         $this->id = 'plisio';
@@ -37,7 +29,6 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
         $this->init_hooks();
         $this->order = new WC_Plisio_Gateway_Order();
     }
-
 
     public function init_hooks()
     {
@@ -79,57 +70,27 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
         return $output;
     }
 
-    /**
-     * Add QRcode section to thankyou page
-     *
-     * @param $order_id
-     */
-    public function qrcode_section($order_id)
-    {
-        global $wp;
+	public function qrcode_section($order_id)
+	{
+		global $wp;
 
-	    $wcOrder = wc_get_order($order_id);
-	    $shop = $this->plisio->getShopInfo();
+		$wcOrder = wc_get_order($order_id);
+		$shop = $this->plisio->getShopInfo();
 
-        include(implode(DIRECTORY_SEPARATOR, [PLISIO_PLUGIN_PATH, 'assets', 'language.php']));
+		if (is_null($order_id)){
+			$order_id = $wp->query_vars['order-received'];
+		}
+		$order = $this->order->get($order_id);
 
-	    if (is_null($order_id)){
-            $order_id = $wp->query_vars['order-received'];
-        }
-        $order = $this->order->get($order_id);
-
-        if ($order) {
-        	$expire_utc = (new DateTime($order['expire_utc']))->getTimestamp()*1000;
-
-        	$allowed_currencies = [];
-        	$checkout_total_fiat = $wcOrder->get_total();
-
-	        $extra_commission = $shop['data']['extra_commission'];
-	        $commission_payment = $shop['data']['commission_payment'];
-
-	        $return_url = add_query_arg('order-received', $wcOrder->get_id(), add_query_arg('key', $wcOrder->get_order_key(), $this->get_return_url($wcOrder)));
-
-        	if ($order['invoice_currency_set'] != 1) {
-        		$allowed_currencies = $this->get_plisio_receive_currencies($wcOrder->get_currency());
-	        }
-
-	        if (isset($order['tx_urls']) && !empty($order['tx_urls'])) {
-		        try {
-			        $txUrl = json_decode(stripslashes($order['tx_urls']));
-			        if (!empty($txUrl)) {
-				        $txUrl = gettype($txUrl) === 'string' ? $txUrl : $txUrl[count($txUrl) - 1];
-				        $order['txUrl'] = $txUrl;
-			        }
-		        } catch (Exception $e) {
-		        }
-	        }
-	        include_once(implode(DIRECTORY_SEPARATOR, [PLISIO_PLUGIN_PATH, 'templates', 'invoice.php']));
-        }
-    }
+		if ($order) {
+			$plisio_invoice_id = $order['plisio_invoice_id'];
+			include_once(implode(DIRECTORY_SEPARATOR, [PLISIO_PLUGIN_PATH, 'templates', 'invoice.php']));
+		}
+	}
 
     public function get_icon(){
         $shop = $this->plisio->getShopInfo();
-        if (isset($shop['data']['white_label']) && $shop['data']['white_label'] == true) {
+        if ($shop['data']['white_label']) {
             return false;
         } else {
             return parent::get_icon();
@@ -180,29 +141,19 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
     public function process_payment($order_id)
     {
         $order = new WC_Order($order_id);
-
-	    $plisio_receive_currencies = $this->get_plisio_receive_currencies($order->get_currency());
-	    $plisio_receive_cids = array_keys($plisio_receive_currencies);
-
-        $description = array();
-        foreach ($order->get_items('line_item') as $item) {
-            $description[] = $item['qty'] . ' × ' . $item['name'];
-        }
+        $shop = $this->plisio->getShopInfo();
 
 	    $amount = $order->get_total();
 
         $data = array(
             'order_number' => $order->get_id(),
             'order_name' => get_bloginfo('name', 'raw') . ' Order #' . $order->get_id(),
-            'description' => implode( ', ', $description ),
             'source_amount' => number_format($amount, 8, '.', ''),
             'source_currency' => get_woocommerce_currency(),
-            'currency' => $plisio_receive_cids[0],
             'cancel_url' => $order->get_cancel_order_url(),
             'callback_url' => trailingslashit(get_bloginfo('wpurl')) . '?wc-api=wc_plisio_gateway',
             'success_url' => add_query_arg('order-received', $order->get_id(), add_query_arg('key', $order->get_order_key(), $this->get_return_url($order))),
             'email' => $order->get_billing_email(),
-            'language' => get_locale(),
             'plugin' => 'woocommerce',
             'version' => PLISIO_WOOCOMMERCE_VERSION
         );
@@ -215,7 +166,7 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
                 'plisio_invoice_id' => $response['data']['txn_id']
             ]));
 
-            if (isset($response['data']['wallet_hash']) && !empty($response['data']['wallet_hash'])){
+            if (isset($shop['data']['white_label']) && $shop['data']['white_label']){
                 $redirect = $this->get_return_url($order);
             } else {
                 $redirect = $response['data']['invoice_url'];
@@ -226,7 +177,7 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
                 'redirect' => $redirect
             );
         } else {
-        	wc_add_notice('Error occurred while processing the payment:  ' . json_decode($response['data']['message'], true)['amount'], 'error');
+        	wc_add_notice('Error occurred while processing the payment:  ' . implode(',', json_decode($response['data']['message'], true)), 'error');
             return array(
                 'result' => 'failure',
             );
@@ -262,17 +213,14 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
     {
         if ($this->verifyCallbackData($_POST)) {
             $request = $_POST;
-
-
             $data = array_merge($_POST, [
                 'order_id' => $_POST['order_number'],
                 'plisio_invoice_id' => $_POST['txn_id']
             ]);
             $this->order->update($data);
 
-
             $order = new WC_Order($request['order_number']);
-            if ($order->get_payment_method() === "plisio") {
+            if ($order->get_payment_method() == "plisio") {
                 try {
                     if (!$order || !$order->get_id()) {
                         throw new Exception('Order #' . $request['order_id'] . ' does not exists');
@@ -293,9 +241,6 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
                         case 'completed':
                         case 'mismatch':
                             $order->update_status($wcOrderStatus);
-                            if (!isset($request['comment']) || empty($request['comment'])) {
-                                $request['comment'] = __('Payment is confirmed on the network, and has been credited to the merchant. Purchased goods/services can be securely delivered to the buyer.', 'plisio');
-                            }
                             $order->add_order_note($request['comment']);
                             $order->payment_complete();
                             break;
@@ -303,21 +248,9 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
                             $order->update_status($wcOrderStatus);
                             $order->add_order_note(__('Payment rejected by the network or did not confirm within 10 hours.', 'plisio'));
                             break;
-                        case 'expired':
-                            if ((float)$request['source_amount'] <= 0) {
-                                $wcOrderStatus = $orderStatuses['cancelled'];
-                                $order->add_order_note(__('Buyer did not pay within the required time and the invoice expired.',
-                                    'plisio'));
-                            } else {
-                                $order->add_order_note($request['comment']);
-                            }
-                            $order->update_status($wcOrderStatus);
-
-                            break;
                         case 'cancelled':
+                        case 'expired':
                             $wcOrderStatus = $orderStatuses['cancelled'];
-                            $order->add_order_note(__('Buyer did not pay within the required time and the invoice expired.',
-                                'plisio'));
                             $order->update_status($wcOrderStatus);
                             break;
                     }
@@ -330,20 +263,11 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
         }
     }
 
-    public function validate_receive_currencies_field()
-    {
-        $post = isset($_POST[$this->plugin_id . $this->id . '_receive_currencies']) ? (array)$_POST[$this->plugin_id . $this->id . '_receive_currencies'] : array();
-        if (empty($post)) return false;
-        $post = array_map('esc_attr', $post);
-        return $post;
-    }
-
-
     public function generate_order_statuses_html()
     {
         $plisioStatuses = $this->plisioStatuses();
         $wcStatuses = wc_get_order_statuses();
-        $defaultStatuses = $this->woocommenceStatuses();
+        $defaultStatuses = $this->woocommerceStatuses();
         $storedSettings = get_option('woocommerce_plisio_settings');
         $selectedStatuses = $storedSettings['order_statuses'];
 
@@ -397,7 +321,7 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
         );
     }
 
-    private function woocommenceStatuses()
+    private function woocommerceStatuses()
     {
         return array(
             'pending' => 'wc-pending',
@@ -408,6 +332,5 @@ class WC_Plisio_Gateway extends WC_Payment_Gateway
             'cancelled' => 'wc-cancelled',
         );
     }
-
 
 }
