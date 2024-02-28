@@ -267,6 +267,8 @@ class WC_Gateway_Plisio extends WC_Payment_Gateway {
 
                     switch ($request['status']) {
                         case 'new':
+                            WC()->mailer()->emails['WC_Email_New_Order']->trigger($order->get_id());
+                            break;
                         case 'pending':
                             if ($request['source_amount'] > 0) {
                                 WC()->mailer()->emails['WC_Email_Customer_Processing_Order']->trigger($order->get_id());
