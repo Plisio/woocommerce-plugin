@@ -4,7 +4,7 @@
         <table cellspacing="0">
             <?php
             foreach ($plisioStatuses as $status => $statusTitle) {
-                if (!isset($selectedStatuses[$status]) || empty($currentStatus) === true) {
+                if (!isset($selectedStatuses[$status]) && empty($currentStatus) === true) {
                     $currentStatus = $defaultStatuses[$status];
                 } else {
                     $currentStatus = $selectedStatuses[$status];
