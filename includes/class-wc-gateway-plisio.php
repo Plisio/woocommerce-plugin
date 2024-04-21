@@ -307,7 +307,7 @@ class WC_Gateway_Plisio extends WC_Payment_Gateway {
         $wcStatuses = wc_get_order_statuses();
         $defaultStatuses = $this->woocommerceStatuses();
         $storedSettings = get_option('woocommerce_plisio_settings');
-        $selectedStatuses = $storedSettings['order_statuses'];
+        $selectedStatuses = (isset($storedSettings['order_statuses'])) ? $storedSettings['order_statuses'] : [];
 
         include(implode(DIRECTORY_SEPARATOR, [PLISIO_PLUGIN_PATH, 'resources', 'templates', 'admin_statuses_row.php']));
     }
