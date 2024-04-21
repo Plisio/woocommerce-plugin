@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce Plisio Payments Gateway
  * Plugin URI: https://github.com/Plisio/woocommerce-plugin
  * Description: Adds the Plisio Payments gateway to your WooCommerce website.
- * Version: 2.0.0
+ * Version: 2.0.3
  *
  * Author: Plisio
  * Author URI: https://plisio.net/
