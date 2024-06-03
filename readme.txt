@@ -3,8 +3,8 @@ Contributors: Plisio
 Donate link: https://plisio.net
 Tags: plisio, bitcoin, accept bitcoin, litecoin, ethereum, ripple, monero, bitcoin cash, bcash, altcoins, altcoin, accept altcoin, bitcoin processor, bitcoin gateway, payment gateway, payment module, bitcoin module, bitcoin woocommerce, btc
 Requires at least: 4.0
-Tested up to: 6.4
-Stable tag: 2.0.2
+Tested up to: 6.5
+Stable tag: 2.0.4
 License: MIT
 License URI: https://github.com/Plisio/woocommerce-plugin/blob/master/LICENSE
 
@@ -144,3 +144,7 @@ Having trouble setting it up? Check out the visual guide for installing the Plis
 = 2.0.3 =
 
 *Fix order statuses bug
+
+= 2.0.4 =
+
+*Add order processing status

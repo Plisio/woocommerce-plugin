@@ -268,12 +268,15 @@ class WC_Gateway_Plisio extends WC_Payment_Gateway {
                     switch ($request['status']) {
                         case 'new':
                             WC()->mailer()->emails['WC_Email_New_Order']->trigger($order->get_id());
+                            $order->update_status($wcOrderStatus);
                             break;
                         case 'pending':
                             if ($request['source_amount'] > 0) {
                                 WC()->mailer()->emails['WC_Email_Customer_Processing_Order']->trigger($order->get_id());
+                                $order->update_status('processing');
                             } else {
                                 WC()->mailer()->emails['WC_Email_New_Order']->trigger($order->get_id());
+                                $order->update_status($wcOrderStatus);
                             }
                             break;
                         case 'completed':
@@ -351,6 +354,7 @@ class WC_Gateway_Plisio extends WC_Payment_Gateway {
     {
         return array(
             'pending' => 'Pending',
+            'processing' => 'Processing',
             'completed' => 'Paid',
             'mismatch' => 'Overpayed',
             'error' => 'Failed',
@@ -364,6 +368,7 @@ class WC_Gateway_Plisio extends WC_Payment_Gateway {
         return array(
             'pending' => 'wc-pending',
             'completed' => 'wc-completed',
+            'processing' => 'wc-processing',
             'mismatch' => 'wc-processing',
             'error' => 'wc-failed',
             'expired' => 'wc-failed',
