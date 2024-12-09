@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plisio Gateway.
  *
  * @class    WC_Gateway_Plisio
- * @version  2.0.0
+ * @version  2.0.5
  */
 class WC_Gateway_Plisio extends WC_Payment_Gateway {
 
@@ -369,7 +369,7 @@ class WC_Gateway_Plisio extends WC_Payment_Gateway {
             'pending' => 'wc-pending',
             'completed' => 'wc-completed',
             'processing' => 'wc-processing',
-            'mismatch' => 'wc-processing',
+            'mismatch' => 'wc-completed',
             'error' => 'wc-failed',
             'expired' => 'wc-failed',
             'cancelled' => 'wc-cancelled',
