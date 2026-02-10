@@ -78,9 +78,9 @@ final class WC_Gateway_Plisio_Blocks_Support extends AbstractPaymentMethodType {
 	 */
 	public function get_payment_method_data() {
 		return [
-			'title'       => $this->get_setting( 'title' ),
+			'title'       => $this->gateway->get_title(),
 			'description' => $this->get_setting( 'description' ),
-			'icon'        => $this->get_setting( 'icon' ),
+			'icon'        => $this->gateway->get_icon(),
 			'supports'    => array_filter( $this->gateway->supports, [ $this->gateway, 'supports' ] )
 		];
 	}

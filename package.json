@@ -1,7 +1,7 @@
 {
 	"name": "woocommerce-gateway-plisio",
 	"title": "WooCommerce Plisio Payments",
-	"version": "2.0.4",
+	"version": "2.0.5",
 	"author": "Plisio",
 	"license": "GPL-3.0+",
 	"keywords": [],
