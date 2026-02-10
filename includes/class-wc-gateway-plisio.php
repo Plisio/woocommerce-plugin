@@ -31,6 +31,9 @@ class WC_Gateway_Plisio extends WC_Payment_Gateway {
     /** @var Plisio_Client */
     private $plisio;
 
+    /** @var bool|null */
+    private $white_label_cache = null;
+
 	/**
 	 * Constructor for the gateway.
 	 */
@@ -56,10 +59,6 @@ class WC_Gateway_Plisio extends WC_Payment_Gateway {
         $this->api_key = $this->get_option('api_key');
         $this->order_statuses = $this->get_option('order_statuses');
         $this->plisio = new Plisio_Client($this->api_key);
-
-        $plisioSettings = get_option('woocommerce_plisio_settings', []);
-        $plisioSettings['icon'] = $this->icon;
-        update_option('woocommerce_plisio_settings', $plisioSettings);
 
 		// Actions.
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -204,13 +203,28 @@ class WC_Gateway_Plisio extends WC_Payment_Gateway {
         }
     }
 
-    public function get_icon(){
-        $shop = $this->plisio->getShopInfo();
-        if ($shop['data']['white_label']) {
-            return false;
+	private function is_white_label(){
+		if ($this->white_label_cache === null) {
+			$shop = $this->plisio->getShopInfo();
+			$this->white_label_cache = $shop['data']['white_label'];
+		}
+		return $this->white_label_cache;
+	}
+
+	public function get_title() {
+		if ($this->is_white_label()) {
+			return __('Cryptocurrencies payments', 'woocommerce-gateway-plisio');
+		} else {
+			return $this->title;
+		}
+	}
+
+	public function get_icon(){
+		if ($this->is_white_label()) {
+			return '';
         } else {
-            return parent::get_icon();
-        }
+			return $this->icon;
+		}
     }
 
     public function thankyou()

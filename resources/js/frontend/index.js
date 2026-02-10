@@ -27,10 +27,12 @@ const Label = () => {
 	return (
 		<span className="wc-block-components-payment-method-label">
 		{label}
-		<img
-			src={icon}
-			alt={label}
-		/>
+		{icon && (
+			<img
+				src={icon}
+				alt={label}
+			/>
+		)}
 		</span>
 	);
 };
