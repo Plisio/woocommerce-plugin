@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plisio Gateway.
  *
  * @class    WC_Gateway_Plisio
- * @version  2.0.5
+ * @version  2.0.6
  */
 class WC_Gateway_Plisio extends WC_Payment_Gateway {
 
